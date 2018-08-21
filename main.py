@@ -23,10 +23,12 @@ class Marketplace:
 
     def show_listings(self):
         for item in self.listings:
-            print('{0}. "{1}". {2}, {3}.'.format(girl_with_mandolin.artist, 
-                                                    girl_with_mandolin.title,
-                                                    girl_with_mandolin.year,
-                                                    girl_with_mandolin.medium))  
+            print('{0}. "{1}". {2}, {3}. {4}, {5}.'.format(item.artist, 
+                                                        item.title,
+                                                        item.year,
+                                                        item.medium,
+                                                        item.owner.name,
+                                                        item.location))  
 
 class Client:
     def __init__(self, name, location, is_museum):
@@ -34,9 +36,23 @@ class Client:
         self.location = location
         self.is_museum = is_museum
     
-    def sell_work(self, artwork, price):
+    def sell_artwork(self, artwork, price):
         if artwork.owner == self:
-            pass
+            Listing(artwork, price, artwork.owner)
+            veneer.add_listing(artwork)
+
+    def buy_artwork(self, artwork):
+        if artwork.owner != self:
+            if artwork in veneer.listings:
+                art_listing = artwork
+                artwork.owner = self
+                veneer.remove_listing(artwork)
+  
+    # TODO: Add a wallet instance variable to clients, update the buying and 
+    # selling of artworks to also exchange dollar amounts.
+
+    # TODO: Create a wishlist for your clients, things that are listed 
+    # but they're not sure if they should purchase just yet.
 
 class Listing:
     def __init__(self, art, price, stellar):
@@ -45,13 +61,19 @@ class Listing:
         self.stellar = stellar
 
     def __repr__(self):
-        return 'Monet, Claude. "Vétheuil in the Fog", 1879. Price: $1000'
+        return 'Monet, Claude. "Vétheuil in the Fog", 1879. $1M'
 
+    # TODO: Create expiration dates for listings! Have out of date listings
+    #  automatically removed from the marketplace.
+
+# Create the Marketplace. 
 veneer = Marketplace()
 veneer.show_listings()
 
+# Add a client.
 edytta = Client(name='Edytta Halpirt', location='Private Collection', is_museum=False)
 
+# Add an artwork.
 girl_with_mandolin = Art(artist='Picasso, Pablo', 
                         title='Girl with a Mandolin (Fanny Tellier)',
                         medium='oil on canvas', 
@@ -65,3 +87,20 @@ print('{0}. "{1}". {2}, {3}. {4}, {5}.'.format(girl_with_mandolin.artist,
                                     girl_with_mandolin.owner.location))
 
 mona = Client(name='The MOMA', location='New York', is_museum=True)
+
+# Sell an artwork.
+edytta.sell_artwork(girl_with_mandolin, "$6M")
+
+veneer.show_listings()
+
+# Buy an artwork.
+mona.buy_artwork(girl_with_mandolin)
+
+print('{0}. "{1}". {2}, {3}. {4}, {5}.'.format(girl_with_mandolin.artist, 
+                                    girl_with_mandolin.title,
+                                    girl_with_mandolin.year, 
+                                    girl_with_mandolin.medium,
+                                    girl_with_mandolin.owner.name,
+                                    girl_with_mandolin.owner.location))
+
+veneer.show_listings()
