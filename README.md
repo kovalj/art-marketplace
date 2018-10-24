@@ -1,2 +1,2 @@
-# art-marketplace
+# art_marketplace
 A specialized marketplace for art traders
